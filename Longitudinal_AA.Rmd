@@ -91,8 +91,8 @@ knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/im
 
 # PCA and Image Dimension Reduction - Basic Idea
 
-- Figure recreated by using the first 10 singular values (left) vs. first 50 (right)
-- Essence of the picture is basically captured in just 10 singular values out of a total of 600.
+- Image recreated by using the first 10 singular values (left) vs. first 50 (right)
+- Essence of the image is basically captured in just 10 singular values out of a total of 600.
 - Increasing to the first 50 singular values shows that the picture is almost exactly reproduced (to the human eye). Furthermore, only using the first 50 singular values essentially cuts down the dimensions of the original image by 84%, while still preserving almost all the information from the original image.
 
 ```{r, echo = FALSE,  out.width="100%"}
@@ -108,7 +108,7 @@ knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/im
 knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig2d.jpg")
 ```
 
-# KL Decompostion
+# KL Decomposition
 
 - Let $\mathrm{\bf{K}}^{X0}(v_1, v_2), \mathrm{\bf{K}}^{X1}(v_1, v_2), \text{ and } \mathrm{\bf{K}}^{W}(v_1, v_2)$ denote the covariance operator of $X_{i0}(v), X_{i1}(v)$, and $W_{ij}(v)$, respectively.
 
@@ -123,7 +123,7 @@ knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/im
    - $Var(\zeta_{il}) = \lambda_l^{X1}$ 
    - $Var(\eta_{ijm}) = \lambda_m^{W}$
 
-# KL Decompostion
+# KL Decomposition
 
 Recall the longitudinal model described earlier:
 
@@ -147,7 +147,7 @@ $$
 
 (Note: the normality assumption on the prior distributions of the eigenscores can be relaxed without difficulty. Other distributions with the existence of second order moments can be considered.)
 
-# KL Decompostion
+# KL Decomposition
 
 Recall the Cox model described earlier:
 
@@ -166,14 +166,14 @@ $$
 where $\boldsymbol{\beta}_0 = (\beta_{01},...,\beta_{0N_0})^\prime$, $\boldsymbol{\xi}_i = (\xi_{i1},...,\xi_{iN_0})^\prime$,
 $\boldsymbol{\beta}_1 = (\beta_{11},...,\beta_{1N_1})^\prime$, and $\boldsymbol{\zeta}_i = (\zeta_{i1},...,\zeta_{iN_1})^\prime$
   
-# KL Decompostion - General Idea  
+# KL Decomposition - General Idea  
   
 ```{r, echo = FALSE, out.width="100%", out.height="100%", out.extra='style="float:center; padding:10px"'}
 knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig3.jpg")
 ```
 
   
-# Spectral Decompostion
+# Spectral Decomposition
 
 - Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
 
