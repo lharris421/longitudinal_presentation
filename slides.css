@@ -5,7 +5,11 @@
 }
 
 .definition {
-  text-align: center;
+  text-align: left;
+}
+
+.left {
+  text-align: left;
 }
 
 .gdbar img {
