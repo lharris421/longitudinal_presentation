@@ -1,0 +1,248 @@
+---
+title: "Joint Modeling of Longitudinal Imaging and Survival Data"
+subtitle: "Kai Kang & Xin Yuan Song"
+author: "Logan Harris & Alan Arakkal"
+date: '2023-04-20'
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Background
+
+**Alzheimer’s disease (AD)**
+
+- Characterized by cognitive deficits
+- Gradual changes in cognition occurs with normal ageing, so it’s difficult to identify during pre-clinical phase and distinguish from mild cognitive impairment (MCI).
+- As the disease progresses, the decline in cognition accelerates.
+- Little is known when these changes in cognition occurs or when they are distinguishable from normal ageing.
+- Detection of pre-clinical dementia is important for treatment and outcomes.
+
+# Background
+
+```{r, echo = FALSE, out.width="50%", out.height="50%", out.extra='style="float:right; padding:10px"'}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig1.jpg")
+```
+
+- There is evidence to indicate that dynamic changes of specific brain regions over time may be likely associated with AD progression.
+
+- For example, subjects with MCI to AD conversion appear to be associated with increasingly enlarged ventricles across time, whereas subjects who did not progress to AD remained nearly unchanged.
+
+# Research Objectives
+
+- Investigate the association between the longitudinal feature of MRI images and time to AD.
+
+- Develop a prognostic model for clinicians to plan interventions based on the history of patients’ MRI images.
+
+
+# Data
+
+- Alzheimer’s Disease Neuroimaging Initiative (ADNI) study
+  - Overall objective of detecting AD at the earliest stage and identifying ways to track the disease progression.
+
+- Recruited subjects aged 55 to 90 and collected their imaging, genetic, clinical, cognitive, and biochemical characteristics across the long-term study.
+
+- Subjects could develop AD during the study period, so time-to-AD information was also collected.
+
+# MRI Data
+
+- The preprocessed magnetic resonance imaging (MRI) data were obtained for each participant at several time points.
+
+- The image data for a given individual at a given time point can be stored in a voxel (i.e., 3D array structure) of dimension $p= p_1  \times p_2  \times p_3$
+
+- Voxel dimensions are the same across subjects and visits.
+
+- Images are voxel-wise stored, i.e., unfolded into a $p\times1$ vector containing the voxels in a particular order, where the order is preserved across all subjects and visits.
+
+# Complexities
+
+- **Joint modeling**
+  - Need model that incorporates dynamic variations/changing patterns of brain MRI images over time along with time-to-AD event information.
+
+- **Ultrahigh-dimensional images**
+  - MRI images are of dimension 133 × 170 × 129, so $p$=2,916,690
+  - Current joint modeling approaches have not considered settings when the longitudinal observation are Ultrahigh-dimensional.
+
+- **Conducting dynamic prediction**
+   - Existing prediction procedures only accommodate longitudinal low-dimensional observations.
+
+# PCA and Image Dimension Reduction - Basic Idea
+
+- The main idea is to use PCA to obtain low rank approximations of images.
+
+- Take for example this image below:
+  - This gray scale image is a 648 $\times$ 600 image (i.e., p = 388,800)
+
+```{r, echo = FALSE, out.width="50%"}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig2a.jpg")
+```
+
+# PCA and Image Dimension Reduction - Basic Idea
+
+- Implement PCA using singular value decomposition (SVD).
+- Plot normalized eigenvalue by singular value (in this case there are 600 total singular values).
+- After about the first 20−25 singular values, it falls off and the bulk of it is so low, that any information it contains is negligible.
+
+```{r, echo = FALSE, out.width="30%"}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig2b.jpg")
+```
+
+# PCA and Image Dimension Reduction - Basic Idea
+
+- Figure recreated by using the first 10 singular values (left) vs. first 50 (right)
+- Essence of the picture is basically captured in just 10 singular values out of a total of 600.
+- Increasing to the first 50 singular values shows that the picture is almost exactly reproduced (to the human eye). Furthermore, only using the first 50 singular values essentially cuts down the dimensions of the original image by 84%, while still preserving almost all the information from the original image.
+
+```{r, echo = FALSE,  out.width="100%"}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig2c.jpg")
+```
+
+# PCA and Image Dimension Reduction - Basic Idea
+
+- Looking at the next 100 singular values (left), we see some fine structure, especially around the feathers, which are generally indistinguishable to the naked eye.
+- The smallest 300 singular values (right) convey no real information, most likely just noise. 
+
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig2d.jpg")
+```
+
+# KL Decompostion
+
+- Let $\mathrm{\bf{K}}^{X0}(v_1, v_2), \mathrm{\bf{K}}^{X1}(v_1, v_2), \text{ and } \mathrm{\bf{K}}^{W}(v_1, v_2)$ denote the covariance operator of $X_{i0}(v), X_{i1}(v)$, and $W_{ij}(v)$, respectively.
+
+- Based on KL decomposition, we have:
+  - $X_{i0}(v) = \sum^{\infty}_{k=1} \xi_{ik} \psi_{k}^{X0}(v)$
+  - $X_{i1}(v) = \sum^{\infty}_{l=1} \zeta_{il} \psi_{l}^{X1}(v)$
+  - $W_{ij}(v) = \sum^{\infty}_{m=1} \eta_{ijm} \psi_{m}^{W}(v)$ 
+  
+- Where,  $\psi_{k}^{X0}(.), \psi_{l}^{X1}(.),$ and $\psi_{m}^{W}(.)$ are the eigenfunctions of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}$, and $\mathrm{\bf{K}}^{W}$, respectively.  Additionally, $\xi_{ik}, \zeta_{il},$ and $\eta_{ijm}$ are their corresponding eigenscores with:
+   - $E(\xi_{ik}) = E(\zeta_{il}) = E(\eta_{ijm}) = 0$
+   - $Var(\xi_{ik}) = \lambda_k^{X0}$ 
+   - $Var(\zeta_{il}) = \lambda_l^{X1}$ 
+   - $Var(\eta_{ijm}) = \lambda_m^{W}$
+
+# KL Decompostion
+
+Recall the longitudinal model described earlier:
+
+$$
+Y_{ij}(v) = \mu(v) + X_{i0}(v) + X_{i1}(v)T_{ij} + W_{ij}(v) \\
+$$
+
+Now it can be rewritten as 
+
+$$
+Y_{ij}(v)=\mu(v) +\sum^{\infty}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{\infty}_{l=1} \zeta_{il} \psi_{l}^{X1}+\sum^{\infty}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\
+$$
+
+The model above can be approximated by the first few coordinates (i.e., principal components) (i.e., $N_0 , N_1,$ and $N_W$) that are typically small and determined using criterion-based methods (e.g. BIC). Giving us the eigenimages (i.e., low rank approximations of images).
+
+$$
+Y_{ij}(v)=\mu(v) +\sum^{N_0}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{N_1}_{l=1} \zeta_{il} \psi_{l}^{X1}+\sum^{N_W}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\
+$$
+
+- Where the eigenscores are assumed to be normally distributed as $\xi_{ik} \sim N(0,\lambda_K^{X0})$, $\zeta_{il} \sim N(0,\lambda_l^{X1})$, and $\eta_{ijm} \sim N(0,\lambda_m^{W})$  
+
+(Note: the normality assumption on the prior distributions of the eigenscores can be relaxed without difficulty. Other distributions with the existence of second order moments can be considered.)
+
+# KL Decompostion
+
+Recall the Cox model described earlier:
+
+$$
+h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) \exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \boldsymbol{\gamma}^\prime\boldsymbol{Z}_i  \Big]
+$$
+Suppose $\beta_0(v)$ and $\beta_1(v)$ can be expanded on the respective eigenfunctions $\psi_k^{X0}$ and $\psi_l^{X1}$, then $\beta_0(.)$ and $\beta_1(.)$ can also be approximated by $\sum^{N_0}_{k=1}\beta_{0k}\psi_k^{X0}(v)$ and $\sum^{N_1}_{l=1}\beta_{1l}\psi_l^{X1}(v)$. This gives us the proposed model:
+
+$$
+\begin{aligned}
+h(t&|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) \\&= h_0(t) \exp \Big(\sum^{N_0}_{k=1}\beta_{0k}\xi_{ik}(v) + t\sum^{N_0}_{l=1}\beta_{1l}\zeta_{il}+\boldsymbol{\gamma}^\prime \boldsymbol{Z}_i  \Big)\\
+&= h_0(t) \exp \Big(\boldsymbol{\beta}_0^\prime \boldsymbol{\xi}_i + t\boldsymbol{\beta}_1^\prime \boldsymbol{\zeta}_i+\boldsymbol{\gamma}^\prime \boldsymbol{Z}_i \Big)
+\end{aligned}
+$$
+
+where $\boldsymbol{\beta}_0 = (\beta_{01},...,\beta_{0N_0})^\prime$, $\boldsymbol{\xi}_i = (\xi_{i1},...,\xi_{iN_0})^\prime$,
+$\boldsymbol{\beta}_1 = (\beta_{11},...,\beta_{1N_1})^\prime$, and $\boldsymbol{\zeta}_i = (\zeta_{i1},...,\zeta_{iN_1})^\prime$
+  
+# KL Decompostion - General Idea  
+  
+```{r, echo = FALSE, out.width="100%", out.height="100%", out.extra='style="float:center; padding:10px"'}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig3.jpg")
+```
+
+  
+# Spectral Decompostion
+
+- Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
+
+- Start by centering the longitudinal imaging data:
+  - $\tilde{Y}_{ij}(v) = Y_{ij}(v) - \hat{\mu(v)}$, where $\hat{\mu(v)} = \frac{1}{n} \sum^I_{i-1} \sum^{J_i}_{j=1}Y_{ij}(v)$, $n = \sum^I_{i=1}J_i$, $I$ is the total number of subjects, and $J_i$ is the total number of visits for subject i.
+  
+- However, we run into a problem due to $\tilde{Y}_{ij}(v)$ being ultrahigh dimensional, making standard approaches for  the spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ unfeasible. 
+  - For example, with the MRI images of 133 × 170 × 129 ( $p$=2,916,690) the resulting covaraince operator $\hat{\mathrm{\bf{K}}}^{X0}$ is of dimension 2,916,690 $\times$ 2,916,690.
+  
+- To overcome this challenge, use singular value decomposition (SVD):
+  - Let $\tilde{\mathrm{\bf{Y}}} = (\tilde{\mathrm{\bf{Y}}}_1, ..., \tilde{\mathrm{\bf{Y}}}_I)_{p \times n}$, where $\tilde{\mathrm{\bf{Y}}}_i = (\tilde{\mathrm{\bf{Y}}}_{i1},...\tilde{\mathrm{\bf{Y}}}_{iJ_i})$ is the centralized $p \times J_i$ and column $j$ for $j = 1,...,J_i$ contains the unfolded images for subject i at visit j
+  - Construct the singular value decomposition (SVD) of the matrix $\tilde{\mathrm{\bf{Y}}}$  to get the best low-dimension approximation of the matrix which subsequently allows us to obtain a low-dimension representations of the covariance operator $\hat{\mathrm{\bf{K}}}^{X0}, \hat{\mathrm{\bf{K}}}^{X1}, \text{ and } \hat{\mathrm{\bf{K}}}^{W}$.
+
+# Data Analysis - Methods
+
+- Applied proposed method to ADNI dataset.
+
+- Only considered subjects who suffered from MCI at baseline and those with at least 3 longitudinal MRI scans:
+339 subjects who had 3-6 follow-up visits (baseline, month 6, month 12, month 18, month 24, and month 36).
+
+- 127 subjects experienced conversion from MCI to AD.
+
+- Time to event was calculated as time from baseline to date of first diagnosis of AD for those that experience conversion and time from baseline to date of last visit for all others. 
+
+- Censoring rate was approximately 62%.
+
+- MRI data were preprocessed to a dimension of 133 × 170 × 129. 
+
+- Considered demographic variables such as gender and whether or not the subject was married.
+
+- Considered the APOE gene biomarker. Included indicators for one APOE allele carrier and two APOE alleles carrier.
+
+
+# Data Analysis - Methods
+
+- Used BIC to determine $𝑁_0,𝑁_1,$ and $𝑁_𝑤$ and assumed $𝑁_0=𝑁_1=𝑁_𝑤=𝑁$. BIC selected $𝑁=7$. Thus, the joint model with the first seven eigenimages was chosen for the analysis.
+
+- For the baseline hazard function  they chose $𝐺=5$ and selected the cut points as the quantiles of the observed survival time. 
+
+- Used flat priors for the hyperparamters.
+
+- Used MCMC algorithm to collect 10,000 posterior samples after 10,000 burn-in iterations. 
+  - 5.03 minutes of computation time.
+
+# Data Analysis - Results
+
+```{r, echo = FALSE, out.width="30%", out.height="50%", out.extra='style="float:right; padding:10px"'}
+knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/images/fig4.jpg")
+```
+
+- For the imaging predictors:
+  - The 1st and 5th eigenimages of random imaging intercept and the 1st eigenimage of random imaging slope exhibit significant effects on AD hazards.
+
+- Several brain regions are detected to be highly associated with AD hazards:
+  - The positive effect of “lateral ventricles” (the top row of figure) is evident, implying that the enlargement of the lateral ventricles is positively associated with the development of AD. Consistent with the previous medical studies.
+  
+  - In the brain regions that depict negative effects, the magnitudes of the effects of “inferior parietal lobe” ( the second row of figure) and “inferior temporal gyrus and fusiform gyrus” (third row of figure) are relatively large. This is in line with existing research which indicate that AD is negatively correlated to the volume/thickness of these regions.
+ 
+# Data Analysis - Methods
+
+- For the baseline covariates:
+  - Gender had a significant negative effect on AD hazards, indicating that females have a higher risk of suffering from AD than males.
+  - Surprisingly the APOE gene which has been found to be an important risk factor in previous research had an insignificant effect in this study.
+    - One possible explanation is that APOE gene is somehow a confounding variable between certain brain regions and the hazards of AD. 
+
+
+
+
+
+
+
+
