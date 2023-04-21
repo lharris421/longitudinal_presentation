@@ -128,15 +128,14 @@ $$
 
 ## The Likelihood
 
-- Tone this one down a bit
-
-## The Likelihood
-
-- This leads to one single likelihood that can be used for fitting the model
+- Let $\boldsymbol{\theta}$ be the vector containing all unknown parameters
 
 $$
-p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int \int p(R_i, \Delta_i | \boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{\theta})p(\boldsymbol{\xi}_i|\boldsymbol{\theta})p(\boldsymbol{\zeta}_i|\boldsymbol{\theta})d\boldsymbol{\zeta}_i d\boldsymbol{\xi}_i
+p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int p(R_i, \Delta_i | \boldsymbol{X}_i(v), \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{X}_i(v), \boldsymbol{\theta})p(\boldsymbol{X}_i(v)|\boldsymbol{\theta})d\boldsymbol{X}_i(v) 
 $$
+
+
+- Survival information may give information about informative censoring
 
 ## Estimation {.flexbox .vcenter .smaller}
 
@@ -149,6 +148,16 @@ $$
 - Many approaches use an EM algorithm adapted to the specific problem at hand
 - Other approaches have taken a Bayesian approach and developed MCMC algorithms
 - Given the complexity of the problem being solved here, the authors adopted a Bayesian approach
+
+## The Likelihood
+
+- Let $\boldsymbol{D} = \lbrace \boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} \rbrace$
+- Note that $\boldsymbol{\theta} = \lbrace \boldsymbol{\beta}_0, \boldsymbol{\beta}_1, \boldsymbol{\gamma}, \boldsymbol{\xi}_i,  \boldsymbol{\zeta}_i, \boldsymbol{\lambda}_k^{X0}, \boldsymbol{\lambda}_l^{X1}, \boldsymbol{\lambda}_m^{W}, \boldsymbol{h}_g \rbrace$
+- This leads to one single likelihood that can be used for fitting the model
+
+$$
+p(\boldsymbol{D} | \boldsymbol{\theta})= \prod_{i=1}^I \int \int p(R_i, \Delta_i | \boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{\theta})p(\boldsymbol{\xi}_i|\boldsymbol{\theta})p(\boldsymbol{\zeta}_i|\boldsymbol{\theta})d\boldsymbol{\zeta}_i d\boldsymbol{\xi}_i
+$$
 
 ## Bayesian Details: Priors {.flexbox .vcenter .smaller}
 
@@ -261,5 +270,3 @@ $$
 ## TO DO
 
 - Understand joint modeling a bit better
-
-
