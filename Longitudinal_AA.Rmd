@@ -36,7 +36,6 @@ knitr::include_graphics("/Users/alanarakkal/Desktop/longitudinal_presentation/im
 
 - Develop a prognostic model for clinicians to plan interventions based on the history of patients’ MRI images.
 
-
 # Data
 
 - Alzheimer’s Disease Neuroimaging Initiative (ADNI) study
