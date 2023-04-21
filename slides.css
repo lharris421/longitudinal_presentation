@@ -1,0 +1,26 @@
+.emphasized {
+  font-size: 1.5em;
+  /* color: black; */
+  text-align: center;
+}
+
+.definition {
+  text-align: center;
+}
+
+.gdbar img {
+  width: 200px !important;
+  height: 110px !important;
+  margin: 10px 10px;
+}
+
+.gdbar {
+  width: 250px !important;
+  height: 130px !important;
+}
+
+slides > slide:not(.nobackground):before {
+  width: 90px;
+  height: 50px;
+  background-size: 100px 60px;
+}
