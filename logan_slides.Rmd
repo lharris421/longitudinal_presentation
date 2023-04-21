@@ -13,19 +13,12 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Notes
-
-- The specification of the joint model is very flexible 
-- Focus on a specification that can be directly linked to the extensions in the paper
-- Generalizations will be noted as they could be interesting to keep in mind
-- More along the lines as presented in 2004 paper
-- Mix of 2000, 2004, out, and paper's notation
-
-## General assumptions
+## Assumptions {.flexbox .vcenter .smaller}
 
 - Subjects assumed independent
+- In the absence of association between longitudinal and event time data, the joint analysis shoudl recover the same results as if the analyses were done speratly.
 
-## Joint Modeling
+## Joint Modeling {.flexbox .vcenter .smaller}
 
 - The general concept is rather simple:
   1. We have longitudinal data
@@ -36,7 +29,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Survival can inform longitudinal data by accounting for dropout related to outcome
   - e.g. Missed visits due to death likely provides information on the unobserved trajectory of CD4 cell count
   
-## Survival Data Background
+## Survival Data Background {.flexbox .vcenter .smaller}
 
 - *Censoring* occurs when we do not observe a subject until they experience the event of interest
   - May occur due to study ending, death due to another cause, or unrelated circumstances
@@ -46,7 +39,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Define $R_i$ = $min(T_i^*, C_i)$, we call this the *observed time*
 - Finally, define $\Delta_i = I(T_i^* \leq C_i)$ to be the indicator of if the even was observed or not
 
-## Modeling Survival Data 
+## Modeling Survival Data {.flexbox .vcenter .smaller}
 
 - As the name may imply, survival data depends on the survival distribution (S(t))
 - However, usually, the surivial function is defined in terms of a hazard function
@@ -62,7 +55,7 @@ $$
 
 - The above included only constant covariates
 
-## Time Dependent Covariates
+## Time Dependent Covariates {.flexbox .vcenter .smaller}
 
 - Consider the following extension:
 
@@ -74,7 +67,7 @@ $$
 - "May" is critical for this presentation, $\boldsymbol{X}(t)$ is currently an abuse of notation
 - Purely used to align with how the notation is presented in the paper.
 
-## Back to Longitudinal
+## Back to Longitudinal {.flexbox .vcenter .smaller}
 
 - Model X_(u) with random intercept and slope
 - measured at times $t_{ij}$
@@ -101,14 +94,15 @@ $$
 - Similar extensions can be made with the random effects and $T_ij$ in that the form can be made flexible
 
 
-## Extension to Imagining Data
+## Extension to Imagining Data {.flexbox .vcenter .smaller}
 
-- First, let $\mu_i &= \mu$
+- First, let $\mu_i = \mu$
 
 $$
 Y_{ij} = \mu + X_{i0} + X_{i1}T_{ij} + W_{ij} \\
 $$
 
+- The length of $\boldsymbol{Y}_ij$ is usually around 3 Million
 - Then note that we can model each voxel at a given visit $j$:
 
 $$
@@ -116,13 +110,7 @@ Y_{ij}(v) = \mu(v) + X_{i0}(v) + X_{i1}(v)T_{ij} + W_{ij}(v) \\
 $$
 - This extension is of course not trivial, as this is now a functional mixed effects model
 
-## Analogies
-
-- As a starting place, consider a survival model with a time dependent covariate. 
-- On the flip side, we could also consider the information provided to longitudinally collected data 
-- If the processes are modeled independently can lead to biased estimates for the longitudinal model
-
-## Combining Models: The Survival model
+## Combining Models: The Survival model {.flexbox .vcenter .smaller}
 
 - Recall the form presented previously:
 
@@ -138,25 +126,31 @@ $$
 h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace X_{i0}(v)\beta_0(v) + tX_{i1}(v)\beta_1(v)\rbrace dv + Z_i \gamma \Big]
 $$
 
-## Note
+## The Likelihood
 
-- There can be additional relationships made by introducing REs int the survival model that are correlated with those in the longitudinal model
-- In the absence of association between longitudinal and event time data, the joint analysis shoudl recover the same results as if the analyses were done speratly.
+- Tone this one down a bit
 
-## Estimation
+## The Likelihood
+
+- This leads to one single likelihood that can be used for fitting the model
+
+$$
+p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int \int p(R_i, \Delta_i | \boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{\theta})p(\boldsymbol{\xi}_i|\boldsymbol{\theta})p(\boldsymbol{\zeta}_i|\boldsymbol{\theta})d\boldsymbol{\zeta}_i d\boldsymbol{\xi}_i
+$$
+
+## Estimation {.flexbox .vcenter .smaller}
 
 - The route of estimation largely depends on the data at hand and the end goal
 - One simple way to go about this is to use a two stage approach:
   1. Estimate the longitudinal model
   2. Use estimates from (1) in the survival model
 - However this has been shown to lead to considerable bias when measurement error in the longitudinal observations are large
-- Different asusmptions and resulting models need different tools for estimation
+- Different assumptions and resulting models need different tools for estimation
 - Many approaches use an EM algorithm adapted to the specific problem at hand
 - Other approaches have taken a Bayesian approach and developed MCMC algorithms
-- Given the complexity of the problem being solved here, the authors adopted a Bayesian approach to be described later
+- Given the complexity of the problem being solved here, the authors adopted a Bayesian approach
 
-
-## Bayesian Details: Priors
+## Bayesian Details: Priors {.flexbox .vcenter .smaller}
 
 Unknown Parameters:
 
@@ -196,29 +190,76 @@ $$
 
 - With $(\alpha_{1g}, \alpha_{2g})$ often set to $(0.2, 0.4)$ or $(0.5, 1)$ to result in a flat prior.
 
-## Bayesian Details: Sampling
+## Bayesian Details: Sampling {.flexbox .vcenter .smaller}
 
-- Metropolis-hastings within Gibbs to sample from $p(\boldsymbol{\theta}, \boldsymbol{\xi},   \boldsymbol{\zeta}  | \boldsymbol{D})$
 
+- Sampling directly from the posterior is intractable, as one might imagine
+  - Mainly due to the existence of the latent variables $\boldsymbol{\xi}$ and $\boldsymbol{\zeta}$
+  - Instead sampling is done for $p(\boldsymbol{\theta}, \boldsymbol{\xi}, \boldsymbol{\zeta} | \boldsymbol{D})$
 - $\boldsymbol{\eta}_{ij}$ can automatically be updated: $\boldsymbol{\eta}_{ij} = (\Psi^{W'}\Psi^{W})^{-1}\Psi^{W'}(\tilde{\boldsymbol{Y}}_{ij} - \Psi^{X0}\boldsymbol{\xi}_i - T_{ij}\Psi^{X1}\boldsymbol{\zeta})$
-- Add in the full conditionals
-
-- The last 4, are of course easy to sample from
-- The other two are where the MH step comes in: 
-  - Use a multivariate normal 
+- The full conditionals for $\boldsymbol{\xi}_i$ and $\boldsymbol{\zeta}_i$ (jointly) and $\boldsymbol{\beta}_0$, $\boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ (jointly) are a bit unwieldy and don't follow a known distribution.
+  - Required Metropolis Hastings with a multivariate normal proposal
     1. mean at the current value of the parameters of interest
     2. Covariance proportional to the inverse of the fisher information of the posterior
       - Use a small variance parameter to turn acceptance rate to be approximately 35%
+- The eigenscores and $h_g$ can be sampled from using Gibbs sampling
+  - The full conditionals for the eigenscores ($\lambda_k^{X0}$, $\lambda_l^{X1}$, $\lambda_m^{W}$) are Inverse-Gamma
+  - The full conditional for $h_g$ is Gamma
+- Thus, we use Metropolis-hastings within Gibbs to sample from $p(\boldsymbol{\theta}, \boldsymbol{\xi},   \boldsymbol{\zeta}  | \boldsymbol{D})$
+
       
-## Bayesian Details: Prediction
+## Bayesian Details: Prediction {.flexbox .vcenter .smaller}
 
+- Given a set of longitudinal images and baseline covariates
 - Focus on the time interval $(t, t + \delta]$
-- Conditional on survivng up to time $t$, the conditional probability of survival up to time $t +\delta$
+- Conditional on surviving up to time $t$, the conditional probability of survival up to time $t +\delta$
+- Notationally we are interested in $P(T_i^* \geq t + \delta | T_i^* > t, \mathcal{Y}_i^t, \boldsymbol{Z}_i, \boldsymbol{D})$
+- However, recall in the previous step, the posterior we obtained was $p(\boldsymbol{\theta}|\boldsymbol{D})$.
+- Thus, we can compute the above probability with the integrand: $\int P(T_i^* \geq t + \delta | T_i^* > t, \mathcal{Y}_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}$
+- The authors show this can be computed using Monte Carlo integration
+- Predictive ability can be assessed using a time dependent AUC
+  - AUC(t, $\delta$) = $P(\pi_{i_1}(t, \delta) < \pi_{i_2}(t, \delta) | \lbrace T^*_{i_1} \in (t, t + \delta] \rbrace \cap \lbrace T^*_{i_2} > t+ \delta \rbrace)$
 
-## Simulation Summary
+## Simulation Summary: Simulation 1 Setup {.flexbox .vcenter .smaller}
 
-## Extensions
+- Simulate 100 datasets with images of $50 \times 50 \times 50$ and with $\mu(v) = 0$.
+- In these simulations they use two different sample sizes: 300 and 500
+- Generate data with each subject having 7, 8, or 9 scans over time
+- Two principal components are used for the intercept and slope, and four are used for the random subject-visit deviation
+- They also considered three baseline hazards (constant, linear, non-linear) and a range of censoring rates
+- Evalutated Bias, RMSE, and SE
+
+## Simulation Summary: Simulation 1 Results {.flexbox .vcenter .smaller}
+
+- Simulation 1 showed that the estimation procedure was satisfactory for estimating $\boldsymbol{\beta}_0, \boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ as well as the estimates for the eigenscores.
+- They also found that performance is improved as the sample size is increased or censoring rate is decreased
+- Relatively consistent across different baseline hazards
+- Choice of $N_W$ hardly effects estimation of survival model 
+- Use of BIC to select $N_0$ and $N_1$, (where $N_0$ = $N_1$), correctly selected 2 in 99 of the 100 simulations. 
+- Each replication took about 4 and a half minutes.
+
+## Simulation Summary: Simulation 2
+
+- Same setup as simulation 1, but focused on the comparison to the two-stage approach
+- Focused on a constant baseline hazard.
+- They also considered larger eigenscores for the subject-visit variation (1, 0.75, 0.5, 0.25)
+- Found that the two stage approach tends to produce biased results that does not improve with an increase in sample size
+  - Worsens with an increase in the subject-visit variation as well
+
+## Notes {.flexbox .vcenter .smaller}
 
 - Covariates can be shared across models
+- The specification of the joint model is very flexible 
+- Focus on a specification that can be directly linked to the extensions in the paper
+- Generalizations will be noted as they could be interesting to keep in mind
+- More along the lines as presented in 2004 paper
+- Mix of 2000, 2004, our, and paper's notation
+- There can be additional relationships made by introducing REs int the survival model that are correlated with those in the longitudinal model
+- As a starting place, consider a survival model with a time dependent covariate. 
+- On the flip side, we could also consider the information provided to longitudinally collected data 
+
+## TO DO
+
+- Understand joint modeling a bit better
 
 
