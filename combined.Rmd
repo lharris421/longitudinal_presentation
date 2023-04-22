@@ -3,11 +3,7 @@ title: "Joint Modeling of Longitudinal Imaging and Survival Data"
 subtitle: "Kai Kang & Xin Yuan Song"
 author: "Logan Harris & Alan Arakkal"
 date: '2023-04-20'
-output: 
-  ioslides_presentation:
-    widescreen: true
-    css: slides.css
-    logo: images/logo.png
+output: slidy_presentation
 ---
 
 ```{r setup, include=FALSE}
