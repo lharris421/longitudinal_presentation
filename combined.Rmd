@@ -182,7 +182,7 @@ $$
 p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int p(R_i, \Delta_i | \boldsymbol{X}_i(v), \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{X}_i(v), \boldsymbol{\theta})p(\boldsymbol{X}_i(v)|\boldsymbol{\theta})d\boldsymbol{X}_i(v) 
 $$
 
-- In general, the arrival at a single likelihood is not trivial (expand)
+- In general, the arrival at a single likelihood is not trivial 
 
 
 ## Estimation {.smaller}
@@ -425,7 +425,7 @@ $$
 ## Simulation Summary: Simulation 2 {.smaller}
 
 - Same setup as simulation 1, but focused on the comparison to the two-stage approach
-- Focused on a constant baseline hazard.
+- Used a constant baseline hazard.
 - They also considered larger eigenscores for the subject-visit variation (1, 0.75, 0.5, 0.25)
 - Found that the two stage approach tends to produce biased results that does not improve with an increase in sample size
   - Worsens with an increase in the subject-visit variation as well

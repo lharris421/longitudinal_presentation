@@ -3409,7 +3409,7 @@ p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | 
 \]</p>
 
 <ul>
-<li>In general, the arrival at a single likelihood is not trivial (expand)</li>
+<li>In general, the arrival at a single likelihood is not trivial</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Estimation</h2></hgroup><article  id="estimation" class="smaller">
@@ -3647,11 +3647,11 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 <li>Required Metropolis Hastings with a multivariate normal proposal
 
 <ul>
-<li>mean at the current value of the parameters of interest</li>
+<li>Mean at the current value of the parameters of interest</li>
 <li>Covariance proportional to the inverse of the fisher information of the posterior
 
 <ul>
-<li>Use a small variance parameter to turn acceptance rate to be approximately 35%</li>
+<li>Use a small variance parameter to tune acceptance rate to be approximately 35%</li>
 </ul></li>
 </ul></li>
 </ul></li>
@@ -3661,7 +3661,7 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 <li>The full conditionals for the eigenscores (\(\lambda_k^{X0}\), \(\lambda_l^{X1}\), \(\lambda_m^{W}\)) are Inverse-Gamma</li>
 <li>The full conditional for \(h_g\) is Gamma</li>
 </ul></li>
-<li>Thus, we use Metropolis-hastings within Gibbs to sample from \(p(\boldsymbol{\theta}, \boldsymbol{\xi}, \boldsymbol{\zeta} | \boldsymbol{D})\)</li>
+<li>Thus, Metropolis-Hastings within Gibbs can be used to sample from \(p(\boldsymbol{\theta}, \boldsymbol{\xi}, \boldsymbol{\zeta} | \boldsymbol{D})\)</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Bayesian Details: Prediction</h2></hgroup><article  id="bayesian-details-prediction" class="smaller">
@@ -3671,7 +3671,7 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 <li>Focus on the time interval \((t, t + \delta]\)</li>
 <li>Conditional on surviving up to time \(t\), the conditional probability of survival up to time \(t +\delta\)</li>
 <li>Notationally we are interested in \(P(T_i^* \geq t + \delta | T_i^* &gt; t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{D})\)</li>
-<li>However, recall in the previous step, the posterior we obtained was \(p(\boldsymbol{\theta}|\boldsymbol{D})\).</li>
+<li>However, recall in the previous step, the posterior (\(p(\boldsymbol{\theta}|\boldsymbol{D})\)) was obtained.</li>
 <li>Thus, we can compute the above probability with the integrand: \(\int P(T_i^* \geq t + \delta | T_i^* &gt; t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}\)</li>
 <li>The authors show this can be computed using Monte Carlo integration</li>
 <li>Predictive ability can be assessed using a time dependent AUC
@@ -3707,7 +3707,7 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 
 <ul>
 <li>Same setup as simulation 1, but focused on the comparison to the two-stage approach</li>
-<li>Focused on a constant baseline hazard.</li>
+<li>Used a constant baseline hazard.</li>
 <li>They also considered larger eigenscores for the subject-visit variation (1, 0.75, 0.5, 0.25)</li>
 <li>Found that the two stage approach tends to produce biased results that does not improve with an increase in sample size
 
