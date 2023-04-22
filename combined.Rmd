@@ -19,11 +19,10 @@ knitr::opts_chunk$set(echo = FALSE)
 
 **Alzheimer’s disease (AD)**
 
-
 - Characterized by cognitive deficits
-- Gradual changes in cognition occurs with normal ageing, so it’s difficult to identify during pre-clinical phase and distinguish from mild cognitive impairment (MCI).
+- Gradual changes in cognition occurs with normal aging, so it’s difficult to identify during pre-clinical phase and distinguish from mild cognitive impairment (MCI).
 - As the disease progresses, the decline in cognition accelerates.
-- Little is known when these changes in cognition occurs or when they are distinguishable from normal ageing.
+- Little is known when these changes in cognition occurs or when they are distinguishable from normal aging.
 - Detection of pre-clinical dementia is important for treatment and outcomes.
 
 ## Background
@@ -51,7 +50,7 @@ knitr::include_graphics("images/fig1.jpg")
 
 - Subjects could develop AD during the study period, so time-to-AD information was also collected.
 
-## MRI Data 
+## MRI Data
 
 - The preprocessed magnetic resonance imaging (MRI) data were obtained for each participant at several time points.
 
@@ -61,47 +60,51 @@ knitr::include_graphics("images/fig1.jpg")
 
 - Images are voxel-wise stored, i.e., unfolded into a $p\times1$ vector containing the voxels in a particular order, where the order is preserved across all subjects and visits.
 
-## Complexities 
+## Complexities
 
 - **Joint modeling**
   - Need model that incorporates dynamic variations/changing patterns of brain MRI images over time along with time-to-AD event information.
 
 - **Ultrahigh-dimensional images**
   - MRI images are of dimension 133 × 170 × 129, so $p$=2,916,690
-  - Current joint modeling approaches have not considered settings when the longitudinal observation are Ultrahigh-dimensional.
+  - Current joint modeling approaches have not considered settings when the longitudinal observations are Ultrahigh-dimensional.
 
 - **Conducting dynamic prediction**
    - Existing prediction procedures only accommodate longitudinal low-dimensional observations.
 
 
-## Joint Modeling {.smaller}
+## Joint Modeling
 
 - The general concept is rather simple:
   1. We have longitudinal data
   2. We have survival data
   3. We want to model them in a way that the models borrow information from one another
 - Longitudinal data can inform survival outcome
-  - e.g. CD4 cell count and the time to progression to AIDS or death
-- Survival can inform longitudinal data by accounting for dropout related to outcome
-  - e.g. Missed visits due to death likely provides information on the unobserved trajectory of CD4 cell count
+  - e.g. Increasing size of ventricles and the time to AD
+- Survival can inform longitudinal data by accounting for informative censoring
+  - e.g. Missed visits due to progression to AD or death likely provides information on potentially unobserved trajectories of changes in the ventricles
   
 ## Survival Data Background {.smaller}
 
+- What makes survival data unique is *Censoring*
 - *Censoring* occurs when we do not observe a subject until they experience the event of interest
   - May occur due to study ending, death due to another cause, or unrelated circumstances
+  
+**Notation:**
+  
 - Let $T_i^*$ be the actual survival time, which may or may not be observed due to censoring
   - The reason for $^*$ is to distingish this time from the measurement times in the longitudinal data
 - Let $C_i$ be the censoring time
 - Define $R_i$ = $min(T_i^*, C_i)$, we call this the *observed time*
-- Finally, define $\Delta_i = I(T_i^* \leq C_i)$ to be the indicator of if the even was observed or not
+- Finally, define $\Delta_i = I(T_i^* \leq C_i)$ to be the indicator of if the event was observed or not
 
 ## Modeling Survival Data {.smaller}
 
-- As the name may imply, survival data depends on the survival distribution (S(t))
+- As the name implies, survival data depends on the survival distribution (S(t))
 - However, usually, the surivial function is defined in terms of a hazard function
 - The hazard function represents the instantaneous failure rate at time $t$.
-- More specifically, it is the probability that a subject will fail in at time $t$ given that $T > t$
-- $h(t) = \lim_{\delta \rightarrow 0} \frac{P(t < T < t + \delta | T > t)}{\delta}$
+- More specifically, it is the probability that a subject will fail at time $t$ given that $T^* > t$
+- $h(t) = \lim_{\delta \rightarrow 0} \frac{P(t + \delta  > T^* > t | T > t)}{\delta}$
 - $h(t)$ relates to $S(t)$ by $h(t) = \frac{f(t)}{S(t)}$ where $f(t) = -\frac{d}{dt}S(t) =\frac{d}{dt}F(t)$.
 - The hazard is often modeled using the Cox PH model:
 
@@ -109,6 +112,7 @@ $$
 h(t|x) = h_0(t)exp \Big[Z_i \gamma \Big]
 $$
 
+- Where $x$ at this point is an arbitrary stand in to represent "data"
 - The above included only constant covariates
 
 ## Time Dependent Covariates {.smaller}
@@ -116,7 +120,7 @@ $$
 - Consider the following extension:
 
 $$
-h(t|x) = h_0(t)exp \Big[\boldsymbol{X}(t)\boldsymbol{\beta} + Z_i \gamma \Big]
+h(t|x) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]
 $$
 
 - This indicates that $\boldsymbol{X}$ may be time dependent
@@ -125,16 +129,17 @@ $$
 
 ## Back to Longitudinal {.smaller}
 
-- Model $X_{(u)}$ with random intercept and slope
+- Now that we have an idea of the form of the survival model, how will we model the images?
+- Model $Y_{ij}$ with random intercept and slope model
 - measured at times $t_{ij}$
 
 $$
 Y_{ij} = \mu_i + X_{i0} + X_{i1}T_{ij} + W_{ij} \\
 $$
 
-- $Y_{ij}$ is the value actually observed at time $t_ij$
+- $Y_{ij}$ is the value actually observed at time $t_{ij}$
 - $X_{i0}$ is a random intercept, and $X_{i1}$ a random slope
-- $W_{ij}$ is random Normal error
+- $W_{ij}$ is random normal error representing individual-visit variation
 - Note that the terms in the model above can be generalized 
 
 ## Extension to Imaging Data {.smaller}
@@ -145,7 +150,6 @@ $$
 Y_{ij} = \mu + X_{i0} + X_{i1}T_{ij} + W_{ij} \\
 $$
 
-- The length of $\boldsymbol{Y}_ij$ is usually around 3 Million
 - Then note that we can model each voxel at a given visit $j$:
 
 $$
@@ -166,19 +170,20 @@ $$
   - Integrate over this information
 
 $$
-h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace X_{i0}(v)\beta_0(v) + tX_{i1}(v)\beta_1(v)\rbrace dv + Z_i \gamma \Big]
+h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \gamma'Z_i \Big]
 $$
 
 ## The Likelihood {.smaller}
 
+- Okay, great, but the above seems like a bit of a simplification, how do we actaully fit this model?
 - Let $\boldsymbol{\theta}$ be the vector containing all unknown parameters
 
 $$
 p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int p(R_i, \Delta_i | \boldsymbol{X}_i(v), \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{X}_i(v), \boldsymbol{\theta})p(\boldsymbol{X}_i(v)|\boldsymbol{\theta})d\boldsymbol{X}_i(v) 
 $$
 
+- In general, the arrival at a single likelihood is not trivial (expand)
 
-- Survival information may give information about informative censoring
 
 ## Estimation {.smaller}
 
@@ -187,14 +192,13 @@ $$
   1. Estimate the longitudinal model
   2. Use estimates from (1) in the survival model
 - However this has been shown to lead to considerable bias when measurement error in the longitudinal observations are large
-- Different assumptions and resulting models need different tools for estimation
 - Many approaches use an EM algorithm adapted to the specific problem at hand
 - Other approaches have taken a Bayesian approach and developed MCMC algorithms
 - Given the complexity of the problem being solved here, the authors adopted a Bayesian approach
-- In the absence of association between longitudinal and event time data, the joint analysis shoudl recover the same results as if the analyses were done speratly.
+- In the absence of association between longitudinal and event time data, the joint analysis should recover the same results as if the analyses were done speratly.
 
 
-## PCA and Image Dimension Reduction - Basic Idea 
+## PCA and Image Dimension Reduction - Basic Idea {.smaller}
 
 - The main idea is to use PCA to obtain low rank approximations of images.
 
@@ -205,7 +209,7 @@ knitr::include_graphics("images/fig2a.jpg")
 - Take for example this image:
   - This gray scale image is a 648 $\times$ 600 image (i.e., p = 388,800)
 
-## PCA and Image Dimension Reduction - Basic Idea 
+## PCA and Image Dimension Reduction - Basic Idea {.smaller}
 
 ```{r, echo = FALSE, out.width="40%", out.extra='style="float:right; padding:20px"'}
 knitr::include_graphics("images/fig2b.jpg")
@@ -217,7 +221,7 @@ knitr::include_graphics("images/fig2b.jpg")
 
 - After about the first 20−25 singular values, it falls off and the bulk of it is so low, that any information it contains is negligible.
 
-## PCA and Image Dimension Reduction - Basic Idea 
+## PCA and Image Dimension Reduction - Basic Idea {.smaller}
 
 - Image recreated by using the first 10 singular values (left) vs. first 50 (right)
 - Essence of the image is basically captured in just 10 singular values out of a total of 600.
@@ -227,7 +231,7 @@ knitr::include_graphics("images/fig2b.jpg")
 knitr::include_graphics("images/fig2c.jpg")
 ```
 
-## PCA and Image Dimension Reduction - Basic Idea 
+## PCA and Image Dimension Reduction - Basic Idea {.smaller}
 
 - Looking at the next 100 singular values (left), we see some fine structure, especially around the feathers, which are generally indistinguishable to the naked eye.
 - The smallest 300 singular values (right) convey no real information, most likely just noise. 
@@ -275,7 +279,7 @@ $$
 
 (Note: the normality assumption on the prior distributions of the eigenscores can be relaxed without difficulty. Other distributions with the existence of second order moments can be considered.)
 
-## KL Decomposition 
+## KL Decomposition {.smaller}
 
 Recall the Cox model described earlier:
 
@@ -306,7 +310,7 @@ knitr::include_graphics("images/fig3.jpg")
 - Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
 
 - Start by centering the longitudinal imaging data:
-  - $\tilde{Y}_{ij}(v) = Y_{ij}(v) - \hat{\mu(v)}$, where $\hat{\mu(v)} = \frac{1}{n} \sum^I_{i-1} \sum^{J_i}_{j=1}Y_{ij}(v)$, $n = \sum^I_{i=1}J_i$, $I$ is the total number of subjects, and $J_i$ is the total number of visits for subject i.
+  - $\tilde{Y}_{ij}(v) = Y_{ij}(v) - \hat{\mu(v)}$, where $\hat{\mu(v)} = \frac{1}{n} \sum^I_{i=1} \sum^{J_i}_{j=1}Y_{ij}(v)$, $n = \sum^I_{i=1}J_i$, $I$ is the total number of subjects, and $J_i$ is the total number of visits for subject i.
   
 - However, we run into a problem due to $\tilde{Y}_{ij}(v)$ being ultrahigh dimensional, making standard approaches for  the spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ unfeasible. 
   - For example, with the MRI images of 133 × 170 × 129 ( $p$=2,916,690) the resulting covaraince operator $\hat{\mathrm{\bf{K}}}^{X0}$ is of dimension 2,916,690 $\times$ 2,916,690.
@@ -318,16 +322,18 @@ knitr::include_graphics("images/fig3.jpg")
 ## The Likelihood {.smaller}
 
 - Let $\boldsymbol{D} = \lbrace \boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} \rbrace$
-- Note that $\boldsymbol{\theta} = \lbrace \boldsymbol{\beta}_0, \boldsymbol{\beta}_1, \boldsymbol{\gamma}, \boldsymbol{\xi}_i,  \boldsymbol{\zeta}_i, \boldsymbol{\lambda}_k^{X0}, \boldsymbol{\lambda}_l^{X1}, \boldsymbol{\lambda}_m^{W}, \boldsymbol{h}_g \rbrace$
+- Note that $\boldsymbol{\theta} = \lbrace \boldsymbol{\beta}_0, \boldsymbol{\beta}_1, \boldsymbol{\gamma}, \boldsymbol{\xi}_i,  \boldsymbol{\zeta}_i, \boldsymbol{\eta}_i, \boldsymbol{\lambda}_k^{X0}, \boldsymbol{\lambda}_l^{X1}, \boldsymbol{\lambda}_m^{W}, \boldsymbol{h}_g \rbrace$
 - This leads to one single likelihood that can be used for fitting the model
 
 $$
 p(\boldsymbol{D} | \boldsymbol{\theta})= \prod_{i=1}^I \int \int p(R_i, \Delta_i | \boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{\xi}_i, \boldsymbol{\zeta}_i, \boldsymbol{\theta})p(\boldsymbol{\xi}_i|\boldsymbol{\theta})p(\boldsymbol{\zeta}_i|\boldsymbol{\theta})d\boldsymbol{\zeta}_i d\boldsymbol{\xi}_i
 $$
 
+- Which does not have an explicit form
+
 ## Bayesian Details: Priors {.smaller}
 
-Unknown Parameters:
+**Unknown Parameters:**
 
 $$
 \begin{aligned}
@@ -339,7 +345,7 @@ $$
 
 - The $\sigma^2$s are taken to be large when prior knowledge is not available
 
-Variance Components:
+**Variance Components:**
 
 For $k = 1, \ldots, N_0$, $l = 1, \ldots, N_1$, $m = 1, \ldots, N_w$,
 
@@ -356,7 +362,9 @@ $$
 
 ## Bayesian Details: Priors (continued) {.smaller}
 
-Hazard values:
+**Hazard values:**
+
+- Here the approach taken to estimate $h_0(t)$ is to treat it as a piecewise constant.
 
 For $g = 1, \ldots, G$,
 
@@ -375,13 +383,13 @@ $$
 - $\boldsymbol{\eta}_{ij}$ can automatically be updated: $\boldsymbol{\eta}_{ij} = (\Psi^{W'}\Psi^{W})^{-1}\Psi^{W'}(\tilde{\boldsymbol{Y}}_{ij} - \Psi^{X0}\boldsymbol{\xi}_i - T_{ij}\Psi^{X1}\boldsymbol{\zeta})$
 - The full conditionals for $\boldsymbol{\xi}_i$ and $\boldsymbol{\zeta}_i$ (jointly) and $\boldsymbol{\beta}_0$, $\boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ (jointly) are a bit unwieldy and don't follow a known distribution.
   - Required Metropolis Hastings with a multivariate normal proposal
-    1. mean at the current value of the parameters of interest
-    2. Covariance proportional to the inverse of the fisher information of the posterior
-      - Use a small variance parameter to turn acceptance rate to be approximately 35%
+    - Mean at the current value of the parameters of interest
+    - Covariance proportional to the inverse of the fisher information of the posterior
+      - Use a small variance parameter to tune acceptance rate to be approximately 35%
 - The eigenscores and $h_g$ can be sampled from using Gibbs sampling
   - The full conditionals for the eigenscores ($\lambda_k^{X0}$, $\lambda_l^{X1}$, $\lambda_m^{W}$) are Inverse-Gamma
   - The full conditional for $h_g$ is Gamma
-- Thus, we use Metropolis-hastings within Gibbs to sample from $p(\boldsymbol{\theta}, \boldsymbol{\xi},   \boldsymbol{\zeta}  | \boldsymbol{D})$
+- Thus, Metropolis-Hastings within Gibbs can be used to sample from $p(\boldsymbol{\theta}, \boldsymbol{\xi},   \boldsymbol{\zeta}  | \boldsymbol{D})$
 
       
 ## Bayesian Details: Prediction {.smaller}
@@ -390,7 +398,7 @@ $$
 - Focus on the time interval $(t, t + \delta]$
 - Conditional on surviving up to time $t$, the conditional probability of survival up to time $t +\delta$
 - Notationally we are interested in $P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{D})$
-- However, recall in the previous step, the posterior we obtained was $p(\boldsymbol{\theta}|\boldsymbol{D})$.
+- However, recall in the previous step, the posterior ($p(\boldsymbol{\theta}|\boldsymbol{D})$) was obtained.
 - Thus, we can compute the above probability with the integrand: $\int P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}$
 - The authors show this can be computed using Monte Carlo integration
 - Predictive ability can be assessed using a time dependent AUC
