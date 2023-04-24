@@ -15,6 +15,14 @@ subtitle: Kai Kang & Xin Yuan Song
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Outline
+
+- Background
+- Joint Modeling
+- Dimension reduction of MRI images
+- Estimation
+- Data analysis
+- Conclusions
 
 ## Background
 
@@ -96,7 +104,7 @@ knitr::include_graphics("images/fig1.jpg")
 **Notation:**
   
 - Let $T_i^*$ be the actual survival time, which may or may not be observed due to censoring
-  - The reason for $^*$ is to distingish this time from the measurement times in the longitudinal data
+  - The reason for $^*$ is to distinguish this time from the measurement times in the longitudinal data
 - Let $C_i$ be the censoring time
 - Define $R_i$ = $min(T_i^*, C_i)$, we call this the *observed time*
 - Finally, define $\Delta_i = I(T_i^* \leq C_i)$ to be the indicator of if the event was observed or not
@@ -322,7 +330,7 @@ $$
   1. Estimate the longitudinal model
   2. Use estimates from (1) in the survival model
 - However this has been shown to lead to considerable bias when measurement error in the longitudinal observations are large
-- Many approaches use an EM algorithm adapted to the specific forumlation of the joint model
+- Many approaches use an EM algorithm adapted to the specific formulation of the joint model
 - Other approaches have went Bayesian and developed MCMC algorithms
 - Given the complexity of the problem being solved here, the authors adopted a Bayesian approach
 
@@ -450,6 +458,15 @@ knitr::include_graphics("images/fig4.jpg")
     - One possible explanation is that APOE gene is somehow a confounding variable between certain brain regions and the hazards of AD. 
 
 
+## Conclusions
+
+- Useful method for incorporating ultrahigh-dimensional longitudinal data in the joint modeling process.
+
+- Limitations/future work:
+  - Assumes that $\beta_0(v)$ and $\beta_1(v)$ can be fully represented by the eigenfunctions of $X_{i0}(v)$ and $X_{i1}(v)$.
+  - Unfolding the 3D MRI images and treat them as a one-dimensional function may destroy the underlying spatial structure of the image.
+  - The proposed joint modeling framework can be modified to handle informative dropout.
+
 ## Questions
 
 ## Spectral Decomposition 
@@ -466,6 +483,11 @@ knitr::include_graphics("images/fig4.jpg")
   - Let $\tilde{\mathrm{\bf{Y}}} = (\tilde{\mathrm{\bf{Y}}}_1, ..., \tilde{\mathrm{\bf{Y}}}_I)_{p \times n}$, where $\tilde{\mathrm{\bf{Y}}}_i = (\tilde{\mathrm{\bf{Y}}}_{i1},...\tilde{\mathrm{\bf{Y}}}_{iJ_i})$ is the centralized $p \times J_i$ and column $j$ for $j = 1,...,J_i$ contains the unfolded images for subject i at visit j
   - Construct the singular value decomposition (SVD) of the matrix $\tilde{\mathrm{\bf{Y}}}$  to get the best low-dimension approximation of the matrix which subsequently allows us to obtain a low-dimension representations of the covariance operator $\hat{\mathrm{\bf{K}}}^{X0}, \hat{\mathrm{\bf{K}}}^{X1}, \text{ and } \hat{\mathrm{\bf{K}}}^{W}$.
 
+## Prediction performance
+
+```{r, echo = FALSE,  out.width="70%", fig.align='center'}
+knitr::include_graphics("images/fig5.jpg")
+```
 
 ## Simulation Summary: Simulation 1 Setup 
 
@@ -474,7 +496,7 @@ knitr::include_graphics("images/fig4.jpg")
 - Generate data with each subject having 7, 8, or 9 scans over time
 - Two principal components are used for the intercept and slope, and four are used for the random subject-visit deviation
 - They also considered three baseline hazards (constant, linear, non-linear) and a range of censoring rates
-- Evalutated Bias, RMSE, and SE
+- Evaluated Bias, RMSE, and SE
 
 ## Simulation Summary: Simulation 1 Results 
 
