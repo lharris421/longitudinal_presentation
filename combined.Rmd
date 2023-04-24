@@ -300,20 +300,6 @@ $\boldsymbol{\beta}_1 = (\beta_{11},...,\beta_{1N_1})^\prime$, and $\boldsymbol{
 knitr::include_graphics("images/fig3.jpg")
 ```
 
-  
-## Spectral Decomposition {.smaller}
-
-- Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
-
-- Start by centering the longitudinal imaging data:
-  - $\tilde{Y}_{ij}(v) = Y_{ij}(v) - \hat{\mu(v)}$, where $\hat{\mu(v)} = \frac{1}{n} \sum^I_{i=1} \sum^{J_i}_{j=1}Y_{ij}(v)$, $n = \sum^I_{i=1}J_i$, $I$ is the total number of subjects, and $J_i$ is the total number of visits for subject i.
-  
-- However, we run into a problem due to $\tilde{Y}_{ij}(v)$ being ultrahigh dimensional, making standard approaches for  the spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ unfeasible. 
-  - For example, with the MRI images of 133 × 170 × 129 ( $p$=2,916,690) the resulting covaraince operator $\hat{\mathrm{\bf{K}}}^{X0}$ is of dimension 2,916,690 $\times$ 2,916,690.
-  
-- To overcome this challenge, use singular value decomposition (SVD):
-  - Let $\tilde{\mathrm{\bf{Y}}} = (\tilde{\mathrm{\bf{Y}}}_1, ..., \tilde{\mathrm{\bf{Y}}}_I)_{p \times n}$, where $\tilde{\mathrm{\bf{Y}}}_i = (\tilde{\mathrm{\bf{Y}}}_{i1},...\tilde{\mathrm{\bf{Y}}}_{iJ_i})$ is the centralized $p \times J_i$ and column $j$ for $j = 1,...,J_i$ contains the unfolded images for subject i at visit j
-  - Construct the singular value decomposition (SVD) of the matrix $\tilde{\mathrm{\bf{Y}}}$  to get the best low-dimension approximation of the matrix which subsequently allows us to obtain a low-dimension representations of the covariance operator $\hat{\mathrm{\bf{K}}}^{X0}, \hat{\mathrm{\bf{K}}}^{X1}, \text{ and } \hat{\mathrm{\bf{K}}}^{W}$.
 
 ## The Likelihood {.smaller}
 
@@ -477,6 +463,21 @@ knitr::include_graphics("images/fig4.jpg")
   - Gender had a significant negative effect on AD hazards, indicating that females have a higher risk of suffering from AD than males.
   - Surprisingly the APOE gene which has been found to be an important risk factor in previous research had an insignificant effect in this study.
     - One possible explanation is that APOE gene is somehow a confounding variable between certain brain regions and the hazards of AD. 
+    
+## Questions
 
+## Spectral Decomposition {.smaller}
+
+- Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
+
+- Start by centering the longitudinal imaging data:
+  - $\tilde{Y}_{ij}(v) = Y_{ij}(v) - \hat{\mu(v)}$, where $\hat{\mu(v)} = \frac{1}{n} \sum^I_{i=1} \sum^{J_i}_{j=1}Y_{ij}(v)$, $n = \sum^I_{i=1}J_i$, $I$ is the total number of subjects, and $J_i$ is the total number of visits for subject i.
+  
+- However, we run into a problem due to $\tilde{Y}_{ij}(v)$ being ultrahigh dimensional, making standard approaches for  the spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ unfeasible. 
+  - For example, with the MRI images of 133 × 170 × 129 ( $p$=2,916,690) the resulting covaraince operator $\hat{\mathrm{\bf{K}}}^{X0}$ is of dimension 2,916,690 $\times$ 2,916,690.
+  
+- To overcome this challenge, use singular value decomposition (SVD):
+  - Let $\tilde{\mathrm{\bf{Y}}} = (\tilde{\mathrm{\bf{Y}}}_1, ..., \tilde{\mathrm{\bf{Y}}}_I)_{p \times n}$, where $\tilde{\mathrm{\bf{Y}}}_i = (\tilde{\mathrm{\bf{Y}}}_{i1},...\tilde{\mathrm{\bf{Y}}}_{iJ_i})$ is the centralized $p \times J_i$ and column $j$ for $j = 1,...,J_i$ contains the unfolded images for subject i at visit j
+  - Construct the singular value decomposition (SVD) of the matrix $\tilde{\mathrm{\bf{Y}}}$  to get the best low-dimension approximation of the matrix which subsequently allows us to obtain a low-dimension representations of the covariance operator $\hat{\mathrm{\bf{K}}}^{X0}, \hat{\mathrm{\bf{K}}}^{X1}, \text{ and } \hat{\mathrm{\bf{K}}}^{W}$.
 
 
