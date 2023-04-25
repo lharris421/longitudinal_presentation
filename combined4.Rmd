@@ -4,7 +4,7 @@ author: "Logan Harris & Alan Arakkal"
 date: "2023-04-20"
 output: 
   xaringan::moon_reader:
-    css: ["xaringan-themer.css", "slides4.css"]
+    css: [default, metropolis-fonts, "xaringan-themer.css", "slides4.css"]
     nature:
       navigation:
         scroll: false
@@ -21,7 +21,7 @@ library(xaringanthemer)
 
 style_mono_light(
   base_color = "#0C4160",
-  white_color = lighten_color("#C3CEDA", .9),
+  white_color = lighten_color("#C3CEDA", .95),
   black_color = "#071330",
   text_color = "#000000",
   header_h1_font_size = "1.75rem",
@@ -32,11 +32,11 @@ style_mono_light(
   header_background_auto = TRUE,
   header_background_text_color = "#FFFFFF",
   title_slide_background_color = "#071330",
-  title_slide_text_color = "#FFFFFF",
-  
+  title_slide_text_color = "#FFFFFF"
 )
 ```
 
+class: outline
 
 # Outline
 
@@ -124,8 +124,9 @@ knitr::include_graphics("images/fig1.jpg")
   1. We have longitudinal data
   2. We have survival data
   3. We want to model them in a way that the models borrow information from one another
+- Specifically, the models depend on a common set of latent random effects
 - Longitudinal data can inform survival outcome by providing time dependent information
-  - e.g. Increasing size of ventricles likely provides information about time to AD
+  - e.g. Trajectory of ventricles size likely provides information about time to AD
 - Survival data can inform longitudinal outcome by accounting for informative censoring
   - e.g. Missed visits due to progression to AD likely provides information on potentially unobserved trajectories of changes in the ventricles
   
@@ -159,24 +160,17 @@ knitr::include_graphics("images/fig1.jpg")
 - $h(t)$ relates to $S(t)$ by $h(t) = \frac{f(t)}{S(t)}$ where $f(t) = -\frac{d}{dt}S(t) =\frac{d}{dt}F(t)$
 - The hazard is often modeled using the Cox PH model:
 
-$$h(t|x) = h_0(t)exp \Big[Z_i \gamma \Big]$$
+$$h(t|Z_i) = h_0(t)exp \Big[Z_i \gamma \Big]$$
 
-- Where $x$ at this point is an arbitrary stand-in to represent "data"
-- The above included only constant covariates
-
----
-
-# Time Dependent Covariates 
-
+- The above includes only constant covariates
 - Consider the following extension:
 
 $$
-h(t|x) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]
+h(t|\boldsymbol{X}_i(t), Z_i) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]
 $$
 
-- This indicates that $\boldsymbol{X}$ may be time dependent
-- Purely used to align with how the notation is presented in the paper.
-- "May" is critical for this presentation, $\boldsymbol{X}(t)$ is currently an abuse of notation
+- $\boldsymbol{X}(t)$ is currently an abuse of notation
+- Purely used to align with how the notation is presented in the paper
 
 ---
 
@@ -189,9 +183,11 @@ $$
 $$Y_{ij}=\mu_i+X_{i0}+X_{i1}T_{ij}+W_{ij}$$
 
 - $Y_{ij}$ is the value actually observed at time $T_{ij}$
+- $\mu_i$ represents the fixed effects
 - $X_{i0}$ is a random intercept, and $X_{i1}$ a random slope
 - $W_{ij}$ is an error term representing subject-visit specific deviation
-- Note that the terms in the model above can be generalized 
+
+**Note: that the terms in the model above can be generalized**
 
 ---
 
@@ -215,15 +211,17 @@ $$Y_{ij}(v) = \mu(v) + X_{i0}(v) + X_{i1}(v)T_{ij} + W_{ij}(v)$$
 
 - Recall the form presented previously:
 
-$$h(t|x) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]$$
+$$
+h(t|\boldsymbol{X}_i(t), Z_i) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]
+$$
 
-- We will leave the fixed covariates as is, however, we will include the **REs** from the longitudinal model above in place of the time varying covariates
-- With that said, survival is a univariate outcome, and we have brain scan data that is of much higher dimension
+- We will leave the fixed covariates as is, however, we will include the **REs** from the longitudinal model above in place of the time varying effects
+- With that said, hazard is a univariate measure, and we have brain scan data that is of much higher dimension
   - Integrate over this information
 
 $$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \gamma'Z_i \Big]$$
 
-- Henderson et. al. 2000 provides a more general form of the joint model, for which this is a subset of
+- This is a simple form for a joint model, Henderson et. al. 2000 provides a more general form
 
 ---
 
@@ -238,7 +236,7 @@ $$p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} 
 
 - In general, the arrival at a likelihood is not trivial 
 - Tsiatis and Davidian (2004) covers the formulation of the likelihood which depends on the data itself and the modeling assumptions
-- Due to the treatment of high dimensional data, the likelihood here (to be presented), can be expressed in a form similar to that above, but does not have an explicit form
+- Due to the treatment of high dimensional data, the likelihood (to be presented) can be expressed in a form similar to that above, but does not have an explicit form
 
 ---
 
