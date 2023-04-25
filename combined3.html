@@ -20,8 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Joint Modeling of Longitudinal Imaging and
-Survival Data',
+                title: 'Joint Modeling of Longitudinal Imaging and Survival Data',
                         subtitle: 'Kai Kang &amp; Xin Yuan Song',
                 useBuilds: true,
         usePrettify: true,
@@ -3097,6 +3096,9 @@ font-style: italic;
 summary {
 display: list-item;
 }
+details > summary > p:only-child {
+display: inline;
+}
 slides > slide {
 -webkit-transition: all 0.4s ease-in-out;
 -moz-transition: all 0.4s ease-in-out;
@@ -3140,6 +3142,15 @@ slides > slide:not(.nobackground):before {
 width: 90px;
 height: 50px;
 background-size: 100px 60px;
+}
+.emphasized {
+font-size: 1.5em;
+
+text-align: center;
+position: fixed;
+top: 50%;
+left 50%;
+transform: translate(-50%, 50%);
 }</style>
 
 </head>
@@ -3162,7 +3173,7 @@ background-size: 100px 60px;
 
 <ul>
 <li>Background</li>
-<li>Joint Modeling</li>
+<li>Joint modeling</li>
 <li>Dimension reduction of MRI images</li>
 <li>Estimation</li>
 <li>Data analysis</li>
@@ -3280,7 +3291,7 @@ background-size: 100px 60px;
 <li>Let \(T_i^*\) be the actual survival time, which may or may not be observed due to censoring
 
 <ul>
-<li>The reason for \(^*\) is to distingish this time from the measurement times in the longitudinal data</li>
+<li>The reason for \(^*\) is to distinguish this time from the measurement times in the longitudinal data</li>
 </ul></li>
 <li>Let \(C_i\) be the censoring time</li>
 <li>Define \(R_i\) = \(min(T_i^*, C_i)\), we call this the <em>observed time</em></li>
@@ -3552,7 +3563,7 @@ p(\boldsymbol{D} | \boldsymbol{\theta})= \prod_{i=1}^I \int \int p(R_i, \Delta_i
 <li>Use estimates from (1) in the survival model</li>
 </ol></li>
 <li>However this has been shown to lead to considerable bias when measurement error in the longitudinal observations are large</li>
-<li>Many approaches use an EM algorithm adapted to the specific forumlation of the joint model</li>
+<li>Many approaches use an EM algorithm adapted to the specific formulation of the joint model</li>
 <li>Other approaches have went Bayesian and developed MCMC algorithms</li>
 <li>Given the complexity of the problem being solved here, the authors adopted a Bayesian approach</li>
 </ul>
@@ -3728,7 +3739,7 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Questions</h2></hgroup><article  id="questions" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Questions?</h2></hgroup><article  id="questions" class="smaller flexbox vcenter">
 
 </article></slide><slide class=""><hgroup><h2>Spectral Decomposition</h2></hgroup><article  id="spectral-decomposition" class="smaller ">
 
@@ -3764,7 +3775,7 @@ h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})
 <li>Generate data with each subject having 7, 8, or 9 scans over time</li>
 <li>Two principal components are used for the intercept and slope, and four are used for the random subject-visit deviation</li>
 <li>They also considered three baseline hazards (constant, linear, non-linear) and a range of censoring rates</li>
-<li>Evalutated Bias, RMSE, and SE</li>
+<li>Evaluated Bias, RMSE, and SE</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Simulation Summary: Simulation 1 Results</h2></hgroup><article  id="simulation-summary-simulation-1-results" class="smaller ">

@@ -7,7 +7,6 @@ output:
     css: slides2.css
     widescreen: yes
     smaller: yes
-  beamer_presentation: default
 subtitle: Kai Kang & Xin Yuan Song
 ---
 
@@ -18,7 +17,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ## Outline
 
 - Background
-- Joint Modeling
+- Joint modeling
 - Dimension reduction of MRI images
 - Estimation
 - Data analysis
@@ -467,7 +466,8 @@ knitr::include_graphics("images/fig4.jpg")
   - Unfolding the 3D MRI images and treat them as a one-dimensional function may destroy the underlying spatial structure of the image.
   - The proposed joint modeling framework can be modified to handle informative dropout.
 
-## Questions
+## Questions? {.flexbox .vcenter}
+
 
 ## Spectral Decomposition 
 
