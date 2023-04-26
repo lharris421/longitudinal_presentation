@@ -251,7 +251,7 @@ $$
 - With that said, hazard is a univariate measure, and we have brain scan data that is of much higher dimension
   - Integrate over this information
 
-$$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \gamma'Z_i \Big]$$
+$$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{\mathcal{V}} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \gamma'Z_i \Big]$$
 
 - This form for a joint model is similar to that provided Tsiatis and Davidian (2004)
 
@@ -373,7 +373,7 @@ $$Y_{ij}(v)=\mu(v) +\sum^{N_0}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{N_1
 
 Recall the Cox model described earlier:
 
-$$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) \exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \boldsymbol{\gamma}^\prime\boldsymbol{Z}_i  \Big]$$
+$$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) \exp \Big[ \int_{\mathcal{V}} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \boldsymbol{\gamma}^\prime\boldsymbol{Z}_i  \Big]$$
 Suppose $\beta_0(v)$ and $\beta_1(v)$ can be expanded on the respective eigenfunctions $\psi_k^{X0}$ and $\psi_l^{X1}$, then $\beta_0(.)$ and $\beta_1(.)$ can also be approximated by $\sum^{N_0}_{k=1}\beta_{0k}\psi_k^{X0}(v)$ and $\sum^{N_1}_{l=1}\beta_{1l}\psi_l^{X1}(v)$. This gives us the proposed model:
 
 $$\begin{aligned}
