@@ -216,7 +216,7 @@ $$Y_{ij}=\mu_i+X_{i0}+X_{i1}T_{ij}+W_{ij}$$
 
 - $W_{ij}$ is an error term representing subject-visit specific deviation
 
-**Note: that the terms in the model above can be generalized**
+**Note: The terms in the model above can be generalized**
 
 ---
 
@@ -505,9 +505,9 @@ $$h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})$$
 
 - Notationally this is $P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{D})$
 
-- Thus, we can compute the above probability with the integrand: $\int P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}$
+- Thus, we can compute the above probability with the integral: $\int P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}$
 
-- The authors show this can be estimated using Monte Carlo integration
+- The authors show this can be estimated using Monte Carlo estimation
 
 - Predictive ability can be assessed using a time dependent AUC
   - AUC(t, $\delta$) = $P(\pi_{i_1}(t, \delta) < \pi_{i_2}(t, \delta) | \lbrace T^*_{i_1} \in (t, t + \delta] \rbrace \cap \lbrace T^*_{i_2} > t+ \delta \rbrace)$
