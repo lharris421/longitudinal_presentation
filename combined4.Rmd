@@ -1,7 +1,7 @@
 ---
 title: "Joint Modeling of Longitudinal Imaging <br> and Survival Data"
 author: "Logan Harris & Alan Arakkal"
-date: "2023-04-20"
+date: "2023-04-26"
 output: 
   xaringan::moon_reader:
     css: [default, metropolis-fonts, "xaringan-themer.css", "slides4.css"]
@@ -41,10 +41,15 @@ class: outline
 # Outline
 
 - Background
+
 - Joint modeling
+
 - Dimension reduction of MRI images
+
 - Estimation
+
 - Data analysis
+
 - Conclusions
 
 ---
@@ -54,9 +59,13 @@ class: outline
 **Alzheimer’s disease (AD)**
 
 - Characterized by cognitive deficits
+
 - Gradual changes in cognition occurs with normal aging, so it’s difficult to identify during pre-clinical phase and distinguish from mild cognitive impairment (MCI).
+
 - As the disease progresses, the decline in cognition accelerates.
+
 - Little is known when these changes in cognition occurs or when they are distinguishable from normal aging.
+
 - Detection of pre-clinical dementia is important for treatment and outcomes.
 
 ---
@@ -124,9 +133,13 @@ knitr::include_graphics("images/fig1.jpg")
   1. We have longitudinal data
   2. We have survival data
   3. We want to model them in a way that the models borrow information from one another
+  
 - Specifically, the models depend on a common set of latent random effects
+  - Although, the set of shared features could be expanded
+
 - Longitudinal data can inform survival outcome by providing time dependent information
   - e.g. Trajectory of ventricles size likely provides information about time to AD
+  
 - Survival data can inform longitudinal outcome by accounting for informative censoring
   - e.g. Missed visits due to progression to AD likely provides information on potentially unobserved trajectories of changes in the ventricles
   
@@ -144,8 +157,11 @@ knitr::include_graphics("images/fig1.jpg")
   
 - Let $T_i^*$ be the actual survival time, which may or may not be observed due to censoring
   - The reason for $^*$ is to distinguish this time from the measurement times in the longitudinal data
+  
 - Let $C_i$ be the censoring time
+
 - Define $R_i$ = $min(T_i^*, C_i)$, we call this the *observed time*
+
 - Finally, define $\Delta_i = I(T_i^* \leq C_i)$ to be the indicator of if the event was observed or not
 
 ---
@@ -153,16 +169,23 @@ knitr::include_graphics("images/fig1.jpg")
 # Modeling Survival Data 
 
 - As the name might imply, modeling survival data relates the survival distribution (S(t))
+
 - However, usually, we work with the hazard instead of directly with S(t)
+
 - The hazard function represents the instantaneous failure rate at time $t$
+
 - More specifically, it is the probability that a subject will fail at time $t$ given that $T^* \geq t$
+
 - $h(t) = \lim_{\delta \rightarrow 0} \frac{P(t + \delta  > T^* \geq t | T^* \geq t)}{\delta}$
+
 - $h(t)$ relates to $S(t)$ by $h(t) = \frac{f(t)}{S(t)}$ where $f(t) = -\frac{d}{dt}S(t) =\frac{d}{dt}F(t)$
+
 - The hazard is often modeled using the Cox PH model:
 
 $$h(t|Z_i) = h_0(t)exp \Big[Z_i \gamma \Big]$$
 
 - The above includes only constant covariates
+
 - Consider the following extension:
 
 $$
@@ -170,6 +193,7 @@ h(t|\boldsymbol{X}_i(t), Z_i) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\b
 $$
 
 - $\boldsymbol{X}(t)$ is currently an abuse of notation
+
 - Purely used to align with how the notation is presented in the paper
 
 ---
@@ -177,14 +201,19 @@ $$
 # Back to Longitudinal 
 
 - Now that we have an idea of the form of the survival model, how will we model the images?
+
 - Model $Y_{ij}$ with a mixed effects model with a random intercept and slope
+
 - Measured at times $T_{ij}$:
 
 $$Y_{ij}=\mu_i+X_{i0}+X_{i1}T_{ij}+W_{ij}$$
 
 - $Y_{ij}$ is the value actually observed at time $T_{ij}$
+
 - $\mu_i$ represents the fixed effects
+
 - $X_{i0}$ is a random intercept, and $X_{i1}$ a random slope
+
 - $W_{ij}$ is an error term representing subject-visit specific deviation
 
 **Note: that the terms in the model above can be generalized**
@@ -205,6 +234,8 @@ $$Y_{ij}(v) = \mu(v) + X_{i0}(v) + X_{i1}(v)T_{ij} + W_{ij}(v)$$
 
 - The details of the functional form will be covered later
 
+- $X_{i0}(v), X_{i1}(v), W_{ij}(v)$ are all assumed to have zero mean, be square-integrable, and mutaually uncorrelated on $\mathcal{V}$
+
 ---
 
 # Combining Models: The Survival model 
@@ -216,26 +247,34 @@ h(t|\boldsymbol{X}_i(t), Z_i) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\b
 $$
 
 - We will leave the fixed covariates as is, however, we will include the **REs** from the longitudinal model above in place of the time varying effects
+
 - With that said, hazard is a univariate measure, and we have brain scan data that is of much higher dimension
   - Integrate over this information
 
 $$h(t|X_{i0}(v), X_{i1}(v), \boldsymbol{Z}_i) = h_0(t) exp \Big[ \int_{V} \lbrace \beta_0(v)X_{i0}(v) + t\beta_1(v)X_{i1}(v)\rbrace dv + \gamma'Z_i \Big]$$
 
-- This is a simple form for a joint model, Henderson et. al. 2000 provides a more general form
+- This form for a joint model is similar to that provided Tsiatis and Davidian (2004)
+
+- Henderson, Diggle, and Dobson (2000) provides a more general form
 
 ---
 
 # The Likelihood 
 
 - Okay, great, but how do we actually fit this model?
+
 - To solve this problem, we need a likelihood
+
 - Let $\boldsymbol{\theta}$ be the vector containing all unknown parameters
+
 - Then the general form of our likelihood is:
 
 $$p(\boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} | \boldsymbol{\theta})= \prod_{i=1}^I \int p(R_i, \Delta_i | \boldsymbol{X}_i(v), \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{Y}_i|\boldsymbol{X}_i(v), \boldsymbol{\theta})p(\boldsymbol{X}_i(v)|\boldsymbol{\theta})d\boldsymbol{X}_i(v)$$
 
 - In general, the arrival at a likelihood is not trivial 
+
 - Tsiatis and Davidian (2004) covers the formulation of the likelihood which depends on the data itself and the modeling assumptions
+
 - Due to the treatment of high dimensional data, the likelihood (to be presented) can be expressed in a form similar to that above, but does not have an explicit form
 
 ---
@@ -270,7 +309,9 @@ knitr::include_graphics("images/fig2b.jpg")
 # PCA and Image Dimension Reduction : Basic Idea 
 
 - Image recreated by using the first 10 singular values (left) vs. first 50 (right)
+
 - Essence of the image is basically captured in just 10 singular values out of a total of 600.
+
 - Increasing to the first 50 singular values shows that the picture is almost exactly reproduced (to the human eye). Furthermore, only using the first 50 singular values essentially cuts down the dimensions of the original image by 84%, while still preserving almost all the information from the original image.
 
 ```{r, echo = FALSE,  out.width="70%", fig.align='center'}
@@ -282,6 +323,7 @@ knitr::include_graphics("images/fig2c.jpg")
 # PCA and Image Dimension Reduction : Basic Idea 
 
 - Looking at the next 100 singular values (left), we see some fine structure, especially around the feathers, which are generally indistinguishable to the naked eye.
+
 - The smallest 300 singular values (right) convey no real information, most likely just noise. 
 
 ```{r, echo = FALSE,  out.width="70%", fig.align='center'}
@@ -315,11 +357,11 @@ $$Y_{ij}(v) = \mu(v) + X_{i0}(v) + X_{i1}(v)T_{ij} + W_{ij}(v) \\$$
 
 Now it can be rewritten as 
 
-$$Y_{ij}(v)=\mu(v) +\sum^{\infty}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{\infty}_{l=1} \zeta_{il} \psi_{l}^{X1}+\sum^{\infty}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\$$
+$$Y_{ij}(v)=\mu(v) +\sum^{\infty}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{\infty}_{l=1} \zeta_{il} \psi_{l}^{X1}(v)+\sum^{\infty}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\$$
 
 The model above can be approximated by the first few coordinates (i.e., principal components) (i.e., $N_0 , N_1,$ and $N_W$) that are typically small and determined using criterion-based methods (e.g. BIC). Giving us the eigenimages (i.e., low rank approximations of images).
 
-$$Y_{ij}(v)=\mu(v) +\sum^{N_0}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{N_1}_{l=1} \zeta_{il} \psi_{l}^{X1}+\sum^{N_W}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\$$
+$$Y_{ij}(v)=\mu(v) +\sum^{N_0}_{k=1} \xi_{ik} \psi_{k}^{X0}(v) + T_{ij}\sum^{N_1}_{l=1} \zeta_{il} \psi_{l}^{X1}(v)+\sum^{N_W}_{m=1} \eta_{ijm} \psi_{m}^{W}(v) \\$$
 
 - Where the eigenscores are assumed to be normally distributed as $\xi_{ik} \sim N(0,\lambda_K^{X0})$, $\zeta_{il} \sim N(0,\lambda_l^{X1})$, and $\eta_{ijm} \sim N(0,\lambda_m^{W})$  
 
@@ -355,7 +397,9 @@ knitr::include_graphics("images/fig3.jpg")
 # The Likelihood 
 
 - Let $\boldsymbol{D} = \lbrace \boldsymbol{R}, \boldsymbol{\Delta}, \tilde{\boldsymbol{Y}}, \boldsymbol{Z} \rbrace$
+
 - Note that $\boldsymbol{\theta} = \lbrace \boldsymbol{\beta}_0, \boldsymbol{\beta}_1, \boldsymbol{\gamma}, \boldsymbol{\lambda}_k^{X0}, \boldsymbol{\lambda}_l^{X1}, \boldsymbol{\lambda}_m^{W}, \boldsymbol{h}_G \rbrace$
+
 - This leads to one single likelihood that can be used for fitting the model
 
 $$
@@ -369,12 +413,19 @@ $$
 # Estimation 
 
 - In general, the route of estimation largely depends on the data at hand and the end goal
+
 - One simple way to go about this is to use a two stage approach:
   1. Estimate the longitudinal model
   2. Use estimates from (1) in the survival model
+  
 - However this has been shown to lead to considerable bias when measurement error in the longitudinal observations are large
+
 - Many approaches use an EM algorithm adapted to the specific formulation of the joint model
+
+- Additionally, nonparametric approaches have also been developed
+
 - Other approaches have went Bayesian and developed MCMC algorithms
+
 - Given the complexity of the problem being solved here, the authors adopted a Bayesian approach
 
 ---
@@ -406,6 +457,7 @@ $$
 $$
 
 - Empirical Bayes can be used to help choose hyperparameters
+
 - For example: $a_k^{X0} \leq 0.01$, $b_k^{X0} \leq 0.01\tilde{\lambda}_k^{X0}$, where $\tilde{\lambda}_k^{X0}$ is the EB estimator
 
 ---
@@ -430,26 +482,33 @@ $$h_g \sim Gamma(\alpha_{1g}, \alpha_{2g})$$
 - Sampling directly from the posterior is intractable
   - Mainly due to the existence of the latent variables $\boldsymbol{\xi}$ and $\boldsymbol{\zeta}$
   - Instead sampling is done for $p(\boldsymbol{\theta}, \boldsymbol{\xi}, \boldsymbol{\zeta} | \boldsymbol{D})$
+  
 - $\boldsymbol{\eta}_{ij}$ can automatically be updated: $\boldsymbol{\eta}_{ij} = (\Psi^{W'}\Psi^{W})^{-1}\Psi^{W'}(\tilde{\boldsymbol{Y}}_{ij} - \Psi^{X0}\boldsymbol{\xi}_i - T_{ij}\Psi^{X1}\boldsymbol{\zeta}_i)$
+
 - The full conditionals for $\boldsymbol{\xi}_i$ and $\boldsymbol{\zeta}_i$ (jointly) and $\boldsymbol{\beta}_0$, $\boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ (jointly) are a bit unwieldy and don't follow a known distribution.
   - Require Metropolis Hastings with a multivariate normal proposal
     - Mean at the current value of the parameters of interest
     - Covariance proportional to the inverse of the fisher information of the posterior
       - Use a small variance parameter to tune acceptance rate to be approximately 35%
+
 - The variances of the eigenscores and $h_g$s can be sampled from using Gibbs sampling
   - The full conditionals for the variances ( $\lambda_k^{X0}$, $\lambda_l^{X1}$, $\lambda_m^{W}$ ) are Inverse-Gamma
   - The full conditionals for $h_g$s are Gamma
-- Thus, Metropolis-Hastings within Gibbs can be used to sample from $p(\boldsymbol{\theta}, \boldsymbol{\xi},   \boldsymbol{\zeta}  | \boldsymbol{D})$
 
 ---
       
 # Bayesian Details: Prediction 
 
 - Given a set of longitudinal images and baseline covariates we want to predict survival probability
+
 - Conditional on surviving up to time $t$, what is the conditional probability of survival up to time $t +\delta$?
+
 - Notationally this is $P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{D})$
+
 - Thus, we can compute the above probability with the integrand: $\int P(T_i^* \geq t + \delta | T_i^* > t, Y_i^t, \boldsymbol{Z}_i, \boldsymbol{\theta})p(\boldsymbol{\theta}|\boldsymbol{D})d\boldsymbol{\theta}$
+
 - The authors show this can be estimated using Monte Carlo integration
+
 - Predictive ability can be assessed using a time dependent AUC
   - AUC(t, $\delta$) = $P(\pi_{i_1}(t, \delta) < \pi_{i_2}(t, \delta) | \lbrace T^*_{i_1} \in (t, t + \delta] \rbrace \cap \lbrace T^*_{i_2} > t+ \delta \rbrace)$
 
@@ -531,6 +590,20 @@ Questions?
 
 ---
 
+# References
+
+**Paper Covered:**
+
+Kai Kang & Xin Yuan Song (2022): Joint Modeling of Longitudinal Imaging and Survival Data, Journal of Computational and Graphical Statistics, DOI: 10.1080/10618600.2022.2102027
+
+**Other Sources:**
+
+Henderson R, Diggle P, Dobson A. Joint modelling of longitudinal measurements and event time data. Biostatistics. 2000 Dec;1(4):465-80. doi: 10.1093/biostatistics/1.4.465. PMID: 12933568.
+
+Tsiatis A, Davidian M. Joint Modeling of Longitudinal and Time-to-Event Data: An Overview. Statistica Sinica. 2004; 14: 809-834. https://www.jstor.org/stable/24307417
+
+---
+
 # Spectral Decomposition 
 
 - Spectral decomposition of $\mathrm{\bf{K}}^{X0}, \mathrm{\bf{K}}^{X1}, \text{ and } \mathrm{\bf{K}}^{W}$ needs to be constructed to derive the eigenimages shown in the model.
@@ -549,7 +622,7 @@ Questions?
 
 # Prediction performance
 
-```{r, echo = FALSE,  out.width="70%", fig.align='center'}
+```{r, echo = FALSE,  out.width="100%", fig.align='center'}
 knitr::include_graphics("images/fig5.jpg")
 ```
 
@@ -558,29 +631,78 @@ knitr::include_graphics("images/fig5.jpg")
 # Simulation Summary: Simulation 1 Setup 
 
 - Simulate 100 datasets with images of $50 \times 50 \times 50$ and with $\mu(v) = 0$.
+
 - In these simulations they use two different sample sizes: 300 and 500
+
 - Generate data with each subject having 7, 8, or 9 scans over time
+
 - Two principal components are used for the intercept and slope, and four are used for the random subject-visit deviation
+
 - They also considered three baseline hazards (constant, linear, non-linear) and a range of censoring rates
+
 - Evaluated Bias, RMSE, and SE
 
 ---
 
 # Simulation Summary: Simulation 1 Results 
 
-- Simulation 1 showed that the estimation procedure was satisfactory for estimating $\boldsymbol{\beta}_0, \boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ as well as the estimates for the eigenscores.
+- Simulation 1 showed that the estimation procedure was satisfactory for estimating $\boldsymbol{\beta}_0, \boldsymbol{\beta}_1$, and $\boldsymbol{\gamma}$ as well as the estimates for the variances of the eigenscores.
+
 - They also found that performance is improved as the sample size is increased or censoring rate is decreased
+
 - Relatively consistent across different baseline hazards
+
 - Choice of $N_W$ hardly effects estimation of survival model 
+
 - Use of BIC to select $N_0$ and $N_1$, (where $N_0$ = $N_1$), correctly selected 2 in 99 of the 100 simulations. 
+
 - Each replication took about 4 and a half minutes.
 
 ---
 
 # Simulation Summary: Simulation 2 
 
-- Same setup as simulation 1, but focused on the comparison to the two-stage approach
+- Similar setup as simulation 1, but focused on the comparison to the two-stage approach
+
 - Used a constant baseline hazard.
+
 - They also considered larger eigenscores for the subject-visit variation (1, 0.75, 0.5, 0.25)
+
 - Found that the two stage approach tends to produce biased results that does not improve with an increase in sample size
   - Worsens with an increase in the subject-visit variation as well
+  
+---
+
+# Other Assumptions
+
+- The effect of the longitudinal data in the time-to-event model should be left-continuous
+
+- Ideally, in the absence of an association, the joint modeling process should yield models as if the two components were modeled separately
+
+- The hazard, conditional on the longitudinal history and covariates, is associated with the rate of change of the smoothed underlying trend of the images
+
+- The random effects are independent of the covariates
+
+- The random effects are assumed normally distributed
+
+- Censoring, timing of longitudinal measurements, and measurement process depend only on the observable history and latent random effects
+
+---
+
+# Tsiatis and Davidian Specification
+
+- Following the notation for this presentation
+
+- Slightly different longitudinal modeling:
+
+$$Y_{ij}=f(t)^T\boldsymbol{X}_{i}+W_{ij}$$
+- Same hazrd:
+
+$$
+h(t|\boldsymbol{X}_i(t), Z_i) = h_0(t)exp \Big[\boldsymbol{X}_i(t)\boldsymbol{\beta} + Z_i \gamma \Big]
+$$
+
+Where $\boldsymbol{X}_i(t) = f(t)^T\boldsymbol{X}_{i}$
+
+- More general in terms of the random effects being a function of time
+- No term for the mean trajectory (this does show up in Henderson, Diggle, and Dobson (2000))
